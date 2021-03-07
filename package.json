@@ -4,12 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npm run test:jest && npm run test:jasmine",
-    "test:jest": "jest --forceExit src/jest.spec.ts",
-    "test:jasmine": "ts-node node_modules/jasmine/bin/jasmine src/jasmine.spec.ts",
-    "test:mocha": "mocha -r node_modules/ts-node/register src/mocha.spec.ts",
-    "test:tap": "tap src/tap.spec.ts",
-    "test:ava": "npm run build && ava src/ava.spec.ts",
+    "test:jest": "jest build/jest.spec.js",
+    "test:jasmine": "jasmine build/jasmine.spec.js",
+    "test:mocha": "mocha build/mocha.spec.js",
+    "test:tap": "tap build/tap.spec.js",
+    "test:ava": "ava src/ava.spec.ts",
     "build": "tsc",
     "patch": "sh ./scripts/patchNest.sh"
   },
