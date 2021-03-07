@@ -3,5 +3,6 @@
 ```shell
 npm i
 npm run patch
-npm t
+npm run build
+npm run test:xxx
 ```

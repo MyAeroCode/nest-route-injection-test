@@ -1,0 +1,35 @@
+name: Node.js CI
+
+on: [push]
+
+jobs:
+  build_and_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os:
+          - ubuntu-latest
+          - macos-latest
+        node_version: [10.x, 12.x, 14.x]
+        architecture:
+          - x64
+    name: Test _ Node ${{ matrix.node_version }} - ${{ matrix.architecture }} on ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: npm ci
+    - run: npm i
+    - run: git clone https://github.com/MyAeroCode/nest
+    - run: cd nest && npm i
+    - run: cd nest && npm run build
+    - run: cp -rf nest/node_modules/@nestjs ./node_modules/
+    - run: rm -r nest
+    - run: npm run build
+    - run: npm run test:jest
+    - run: npm run test:mocha
+    - run: npm run test:jasmine
+    - run: npm run test:tap
+    - run: npm run test:ava
