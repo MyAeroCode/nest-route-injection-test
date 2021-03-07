@@ -123,30 +123,27 @@ describe('support router level mocking', () => {
             const res = await agent.get('/api/hello').query({ userName });
             expect(res.status).toBe(200);
             expect(res.text).toBe(expected);
-            expect((mockito.capture(appControllerSpy.helloWithQuery) as any).actions).toHaveSize(1);
-            expect((mockito.capture(appControllerSpy.helloWithParam) as any).actions).toHaveSize(0);
-            expect((mockito.capture(appControllerSpy.helloWithBody) as any).actions).toHaveSize(0);
-            expect(mockito.capture(appControllerSpy.helloWithQuery).last()).toEqual([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).once();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).never();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).never();
         });
 
         it('POST api/hello sholud call spy function', async () => {
             const res = await agent.post('/api/hello').send({ userName });
             expect(res.status).toBe(201);
             expect(res.text).toBe(expected);
-            expect((mockito.capture(appControllerSpy.helloWithQuery) as any).actions).toHaveSize(0);
-            expect((mockito.capture(appControllerSpy.helloWithParam) as any).actions).toHaveSize(0);
-            expect((mockito.capture(appControllerSpy.helloWithBody) as any).actions).toHaveSize(1);
-            expect(mockito.capture(appControllerSpy.helloWithBody).last()).toEqual([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).never();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).never();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).once();
         });
 
         it(`POST api/hello/:userName sholud call spy function`, async () => {
             const res = await agent.post(`/api/hello/${userName}`);
             expect(res.status).toBe(201);
             expect(res.text).toBe(expected);
-            expect((mockito.capture(appControllerSpy.helloWithQuery) as any).actions).toHaveSize(0);
-            expect((mockito.capture(appControllerSpy.helloWithParam) as any).actions).toHaveSize(1);
-            expect((mockito.capture(appControllerSpy.helloWithBody) as any).actions).toHaveSize(0);
-            expect(mockito.capture(appControllerSpy.helloWithParam).last()).toEqual([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).never();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).once();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).never();
         });
     });
 

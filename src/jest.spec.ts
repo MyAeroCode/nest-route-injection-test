@@ -66,16 +66,19 @@ describe('support router level mocking', () => {
             expect(appController.helloWithQuery).toHaveBeenCalledTimes(0);
             expect(appController.helloWithParam).toHaveBeenCalledTimes(1);
             expect(appController.helloWithBody).toHaveBeenCalledTimes(0);
-            expect(appController.helloWithParam).toHaveBeenLastCalledWith(userName);
+            expect(appController.helloWithParam).toHaveBeenCalledWith(userName);
         });
     });
 
     describe('using sinon', () => {
+        let helloWithQuerySpy: sinon.SinonSpy<[userName: string], string>;
+        let helloWithParamSpy: sinon.SinonSpy<[userName: string], string>;
+        let helloWithBodySpy: sinon.SinonSpy<[userName: string], string>;
         beforeEach(async () => {
             sinon.reset();
-            sinon.spy(appController, 'helloWithQuery');
-            sinon.spy(appController, 'helloWithParam');
-            sinon.spy(appController, 'helloWithBody');
+            helloWithQuerySpy = sinon.spy(appController, 'helloWithQuery');
+            helloWithParamSpy = sinon.spy(appController, 'helloWithParam');
+            helloWithBodySpy = sinon.spy(appController, 'helloWithBody');
             await app.init();
         });
 
@@ -83,30 +86,30 @@ describe('support router level mocking', () => {
             const res = await agent.get('/api/hello').query({ userName });
             expect(res.status).toBe(200);
             expect(res.text).toBe(expected);
-            expect(appController.helloWithQuery).toHaveProperty('callCount', 1);
-            expect(appController.helloWithParam).toHaveProperty('callCount', 0);
-            expect(appController.helloWithBody).toHaveProperty('callCount', 0);
-            expect(appController.helloWithQuery).toHaveProperty('args', [[userName]]);
+            expect(helloWithQuerySpy.callCount).toBe(1);
+            expect(helloWithParamSpy.callCount).toBe(0);
+            expect(helloWithBodySpy.callCount).toBe(0);
+            expect(helloWithQuerySpy.calledWith(userName)).toBe(true);
         });
 
         test('POST api/hello sholud call spy function', async () => {
             const res = await agent.post('/api/hello').send({ userName });
             expect(res.status).toBe(201);
             expect(res.text).toBe(expected);
-            expect(appController.helloWithQuery).toHaveProperty('callCount', 0);
-            expect(appController.helloWithParam).toHaveProperty('callCount', 0);
-            expect(appController.helloWithBody).toHaveProperty('callCount', 1);
-            expect(appController.helloWithBody).toHaveProperty('args', [[userName]]);
+            expect(helloWithQuerySpy.callCount).toBe(0);
+            expect(helloWithParamSpy.callCount).toBe(0);
+            expect(helloWithBodySpy.callCount).toBe(1);
+            expect(helloWithBodySpy.calledWith(userName)).toBe(true);
         });
 
         test(`POST api/hello/:userName sholud call spy function`, async () => {
             const res = await agent.post(`/api/hello/${userName}`);
             expect(res.status).toBe(201);
             expect(res.text).toBe(expected);
-            expect(appController.helloWithQuery).toHaveProperty('callCount', 0);
-            expect(appController.helloWithParam).toHaveProperty('callCount', 1);
-            expect(appController.helloWithBody).toHaveProperty('callCount', 0);
-            expect(appController.helloWithParam).toHaveProperty('args', [[userName]]);
+            expect(helloWithQuerySpy.callCount).toBe(0);
+            expect(helloWithParamSpy.callCount).toBe(1);
+            expect(helloWithBodySpy.callCount).toBe(0);
+            expect(helloWithParamSpy.calledWith(userName)).toBe(true);
         });
     });
 
@@ -122,30 +125,27 @@ describe('support router level mocking', () => {
             const res = await agent.get('/api/hello').query({ userName });
             expect(res.status).toBe(200);
             expect(res.text).toBe(expected);
-            expect(mockito.capture(appControllerSpy.helloWithQuery)).toHaveProperty('actions.length', 1);
-            expect(mockito.capture(appControllerSpy.helloWithParam)).toHaveProperty('actions.length', 0);
-            expect(mockito.capture(appControllerSpy.helloWithBody)).toHaveProperty('actions.length', 0);
-            expect(mockito.capture(appControllerSpy.helloWithQuery).last()).toEqual([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).once();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).never();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).never();
         });
 
         test('POST api/hello sholud call spy function', async () => {
             const res = await agent.post('/api/hello').send({ userName });
             expect(res.status).toBe(201);
             expect(res.text).toBe(expected);
-            expect(mockito.capture(appControllerSpy.helloWithQuery)).toHaveProperty('actions.length', 0);
-            expect(mockito.capture(appControllerSpy.helloWithParam)).toHaveProperty('actions.length', 0);
-            expect(mockito.capture(appControllerSpy.helloWithBody)).toHaveProperty('actions.length', 1);
-            expect(mockito.capture(appControllerSpy.helloWithBody).last()).toEqual([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).never();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).never();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).once();
         });
 
         test(`POST api/hello/:userName sholud call spy function`, async () => {
             const res = await agent.post(`/api/hello/${userName}`);
             expect(res.status).toBe(201);
             expect(res.text).toBe(expected);
-            expect(mockito.capture(appControllerSpy.helloWithQuery)).toHaveProperty('actions.length', 0);
-            expect(mockito.capture(appControllerSpy.helloWithParam)).toHaveProperty('actions.length', 1);
-            expect(mockito.capture(appControllerSpy.helloWithBody)).toHaveProperty('actions.length', 0);
-            expect(mockito.capture(appControllerSpy.helloWithParam).last()).toEqual([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).never();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).once();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).never();
         });
     });
 

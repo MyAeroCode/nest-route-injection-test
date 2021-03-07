@@ -89,57 +89,27 @@ describe('support router level mocking', () => {
             const res = await agent.get('/api/hello').query({ userName });
             expect(res.status).to.be.eq(200);
             expect(res.text).to.be.eq(expected);
-            expect(mockito.capture(appControllerSpy.helloWithQuery))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(1);
-            expect(mockito.capture(appControllerSpy.helloWithParam))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(0);
-            expect(mockito.capture(appControllerSpy.helloWithBody))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(0);
-            expect(mockito.capture(appControllerSpy.helloWithQuery).last()).to.deep.eq([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).once();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).never();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).never();
         });
 
         it('POST api/hello sholud call spy function', async () => {
             const res = await agent.post('/api/hello').send({ userName });
             expect(res.status).to.be.eq(201);
             expect(res.text).to.be.eq(expected);
-            expect(mockito.capture(appControllerSpy.helloWithQuery))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(0);
-            expect(mockito.capture(appControllerSpy.helloWithParam))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(0);
-            expect(mockito.capture(appControllerSpy.helloWithBody))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(1);
-            expect(mockito.capture(appControllerSpy.helloWithBody).last()).to.deep.eq([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).never();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).never();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).once();
         });
 
         it(`POST api/hello/:userName sholud call spy function`, async () => {
             const res = await agent.post(`/api/hello/${userName}`);
             expect(res.status).to.be.eq(201);
             expect(res.text).to.be.eq(expected);
-            expect(mockito.capture(appControllerSpy.helloWithQuery))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(0);
-            expect(mockito.capture(appControllerSpy.helloWithParam))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(1);
-            expect(mockito.capture(appControllerSpy.helloWithBody))
-                .that.have.property('actions')
-                .that.have.property('length')
-                .to.eq(0);
-            expect(mockito.capture(appControllerSpy.helloWithParam).last()).to.deep.eq([userName]);
+            mockito.verify(appControllerSpy.helloWithQuery(userName)).never();
+            mockito.verify(appControllerSpy.helloWithParam(userName)).once();
+            mockito.verify(appControllerSpy.helloWithBody(userName)).never();
         });
     });
 
