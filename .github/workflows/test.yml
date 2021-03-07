@@ -31,5 +31,6 @@ jobs:
     - run: npm run test:jest
     - run: npm run test:mocha
     - run: npm run test:jasmine
+    - run: npm run test:tape
     - run: npm run test:tap
     - run: npm run test:ava
