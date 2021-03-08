@@ -7,6 +7,7 @@
     "test:jest": "jest build/jest.spec.js",
     "test:jasmine": "jasmine build/jasmine.spec.js",
     "test:mocha": "mocha build/mocha.spec.js",
+    "test:qunit": "qunit build/qunit.spec.js",
     "test:tape": "tape build/tap.spec.js",
     "test:tap": "tap build/tap.spec.js",
     "test:ava": "ava src/ava.spec.ts",
